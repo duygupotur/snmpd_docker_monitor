@@ -1,0 +1,25 @@
+echo "Debian-snmp ALL=NOPASSWD: /usr/bin/docker ps" > /etc/sudoers.d/99-snmpd-users
+SNMPD_CONF=/etc/snmp/snmpd.conf
+
+usermod -aG docker Debian-snmp
+
+if ! grep -q "extend name" $SNMPD_CONF ; then
+    echo >> 'extend name /etc/snmp/scripts/docker-compose-name.sh' $SNMPD_CONF
+fi
+
+if ! grep -q "extend image" $SNMPD_CONF ; then
+    echo >> 'extend image /etc/snmp/scripts/docker-compose-image.sh' $SNMPD_CONF
+fi
+
+if ! grep -q "extend created" $SNMPD_CONF ; then
+    echo >> 'extend created /etc/snmp/scripts/docker-compose-created.sh' $SNMPD_CONF
+fi
+
+
+if ! grep -q "extend status" $SNMPD_CONF ; then
+    echo >> 'extend status /etc/snmp/scripts/docker-compose-status.sh' $SNMPD_CONF
+fi
+
+if ! grep -q "extend ports" $SNMPD_CONF ; then
+    echo >> 'extend ports /etc/snmp/scripts/docker-compose-ports.sh' $SNMPD_CONF
+fi
