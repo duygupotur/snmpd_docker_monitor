@@ -32,12 +32,14 @@ jobs:
         id: build_deb_package
         run: |
           build_number="${{ github.run_number }}"
-          cp -r build/debian src/DEBIAN
+          mkdir opt build_src
+          cp -r src/* build_src/
+          cp -r build/debian build_src/DEBIAN
 
-          touch src/DEBIAN/md5sums
-          touch src/DEBIAN/control
-          find ./ -type f -exec md5sum {} \; > src/DEBIAN/md5sums
-          size=$(du -s src | cut -f 1)
+          touch build_src/DEBIAN/md5sums
+          touch build_src/DEBIAN/control
+          find ./ -type f -exec md5sum {} \; > build_src/DEBIAN/md5sums
+          size=$(du -s build_src | cut -f 1)
 
           echo "Package: snmpd-docker-monitor
           Version: $build_number
@@ -49,12 +51,12 @@ jobs:
           Date : $GITHUB_RUN_ID
           Architecture: amd64
           Description: Deb package for monitoring docker with snmp
-          " > src/DEBIAN/control
-          chmod 755 src/DEBIAN/postinst
+          " > build_src/DEBIAN/control
+          chmod 755 build_src/DEBIAN/postinst
 
           . build/version
           ubuntu_package_name="snmpd-docker-monitor-$ver-$build_number"
-          mv src "$package_name"
+          mv build_src "$package_name"
           dpkg-deb -Zgzip --build "$package_name"
 
           echo ::set-output name=path_deb::$(pwd)/"$package_name".deb
