@@ -55,7 +55,7 @@ jobs:
           chmod 755 build_src/DEBIAN/postinst
 
           . build/version
-          ubuntu_package_name="snmpd-docker-monitor-$ver-$build_number"
+          package_name="snmpd-docker-monitor-$ver-$build_number"
           mv build_src "$package_name"
           dpkg-deb -Zgzip --build "$package_name"
 
